@@ -95,9 +95,27 @@ def BPE_tokenizer(words, N):
             max_tokens_len = len(best)
         # add the new token to the vocab
         tokens.col.setdefault(best, 0)
+    tokens.col = dict(sorted(tokens.col.items())) #we sort the vocab in lexicographical order
     return(tokens.col)
 
+def tokenizer(entry, vocab):
+    # to use in practice, returns a list of integer (the order of the token in the vocab)
+    keys = list(vocab.keys())
+    max_token_size = max(len(k) for k in vocab)
+    tokens_list = replace(entry, col, max_token_size)
+    res = []
+    for a in tokens_list:
+        idx = keys.index(a)
+        res.append(idx)
+    return(res)
 
+def detokenizer(entry, vocab):
+    # to use in practice, returns a string from a list of intergers (tokens)
+    keys = list(vocab.keys())
+    res = ''
+    for a in entry: #a is an integer
+        res+= keys[a]
+    return(res)
 
 if __name__ == "__main__":
     import pickle
@@ -105,6 +123,8 @@ if __name__ == "__main__":
     col = BPE_tokenizer(words, 1000)
     word = 'Elle l’était davantage, un de ses grands désirs, qu’elle n’avait jamais avoué à Julien de peur de le choquer, était de le voir quitter, ne fût-ce que pour un jour, son triste habit noir. Avec une adresse vraiment admirable chez une femme si naturelle, elle obtint d’abord de M. de Moirod, et ensuite de M. le sous-préfet de Maugiron, que Julien serait nommé garde d’honneur de préférence à cinq ou six jeunes gens, fils de fabricants fort aisés, et dont deux au moins étaient d’une exemplaire piété. M. Valenod, qui comptait prêter sa calèche aux plus jolies femmes de la ville et faire admirer ses beaux normands, consentit à donner un de ses chevaux à Julien, l’être qu’il haïssait le plus. Mais tous les gardes d’honneur avaient à eux ou d’emprunt quelqu’un de ces beaux habits bleu de ciel avec deux épaulettes de colonel en argent, qui avaient brillé sept ans auparavant. Mme de Rênal voulait un habit neuf, et il ne lui restait que quatre jours pour envoyer à Besançon, et en faire revenir l’habit d’uniforme, les armes, le chapeau, etc., tout ce qui fait un garde d’honneur. Ce qu’il y a de plaisant, c’est qu’elle trouvait imprudent de faire faire l’habit de Julien à Verrières. Elle voulait le surprendre, lui et la ville.'
     print(replace(word, col, max(len(k) for k in col)))
+    print(tokenizer("salut à tous", col))
+    print(detokenizer(tokenizer("salut à tous", col), col))
     with open("vocab.pkl", "wb") as f:
         pickle.dump(col, f, protocol=pickle.HIGHEST_PROTOCOL)
    
