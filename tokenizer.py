@@ -102,7 +102,7 @@ def tokenizer(entry, vocab):
     # to use in practice, returns a list of integer (the order of the token in the vocab)
     keys = list(vocab.keys())
     max_token_size = max(len(k) for k in vocab)
-    tokens_list = replace(entry, col, max_token_size)
+    tokens_list = replace(entry, vocab, max_token_size)
     res = []
     for a in tokens_list:
         idx = keys.index(a)

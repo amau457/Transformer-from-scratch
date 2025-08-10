@@ -54,27 +54,14 @@ class transformer_forward:
     
     def embed(self , idx):
         #embeding vectors (tokens)
-        # idx : array of token ids, shape (seq_len,) or (batch, seq_len)
+        # idx : array of token ids, shape (batch, seq_len)
         idx = np.array(idx)
-        if idx.ndim == 1:
-            seq_len = idx.shape[0]
-            token_emb = self.token_embedding[idx] # (seq_len, d_model)
-            pos_emb   = self.pos_embedding[:seq_len, :]    
-            x = token_emb + pos_emb 
-            #normalization:                
-            return(x[None, :, :])
-        elif idx.ndim == 2:
-            batch, seq_len = idx.shape
-            token_emb = self.token_embedding[idx] # (batch, seq_len, d_model)
-            pos_emb   = self.pos_embedding[:seq_len, :][None, :, :] # (1, seq_len, d_model)
-            token_emb = token_emb*np.sqrt(self.d_model) 
-            x = token_emb + pos_emb  # (batch, seq_len, d_model)
-            mu = x.mean(axis=-1, keepdims=True) #mean
-            sigma = x.std(axis=-1, keepdims=True) #standard deviation
-            x = (x - mu) / (sigma)   #x_norm  
-            return(x)
-        else:
-            raise ValueError("error dimension idx")
+        batch, seq_len = idx.shape
+        token_emb = self.token_embedding[idx] # (batch, seq_len, d_model)
+        pos_emb   = self.pos_embedding[:seq_len, :][None, :, :] # (1, seq_len, d_model)
+        token_emb = token_emb*np.sqrt(self.d_model) 
+        x = token_emb + pos_emb  # (batch, seq_len, d_model)
+        return(x)
         
     def split_heads(self, x):
         # split attention heads
@@ -174,5 +161,5 @@ if __name__ == "__main__":
     ids = np.array([[1,2,3,4,0,0],[2,3,4,1,0,0]])
     logits, attn = model.forward(ids) # shape (2, seq, vocab_size)
     print("logits:", logits.shape, "min/max/mean/std:", logits.min(), logits.max(), logits.mean(), logits.std())
-    plt.imshow(attn[0][0,0], cmap='viridis') #show the heatmap of one attn
+    plt.imshow(attn[0][0,0], cmap='viridis') #show the heatmap of one attention map
     plt.show()
