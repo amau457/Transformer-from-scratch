@@ -14,4 +14,4 @@ transformer backward:
 changed the design to make the backward calculations simplier, divided the transformer block, so we can calculate the backprop of every block and then backpropagate everything (care of residual).
 the transformer backward has a litle overfit test at the end to make sure that forward and backward are working fine. 
 
-working on bigger tests, testing hyperparameters, adding eval, making a better optimizer (maybe ADAM).
+working on bigger tests, testing hyperparameters, adding eval, making a better optimizer (maybe ADAM), fixing issues with tokenizer (dont take spaces into consideration).
